@@ -47,6 +47,14 @@ def write_storedata(store):
         for key, values in store.items():
             f.write(f'{key}\n')
 
+def write_picture_adddress(place, pictures):
+    with open('search_store_Picture\\store_pictures_found.txt', 'a', encoding='utf-8') as f :  #最後保存全部
+        print(f'{place} {len(pictures)} 張')
+        f.write(f'{place}: {pictures}\n')
+    with open('search_store_Picture\\already_finded_store.txt', 'a', encoding='utf-8') as w:  # 最後保存全部
+        w.write(f'{place}\n')
+
+
 def clean_dot_for_number(number):
     number = number.replace(',', '')
     return int(number)
@@ -60,6 +68,7 @@ def read_txt(readtxt):
         temp  = clean_line(i)
         if temp != '\n' and temp != '':
             place.append(temp)
+
     return  set(place)
 
 
@@ -178,6 +187,17 @@ class scrapy_Data_google_map:
 
         return open_time
 
+    def get_picture(self):
+        try:
+            time.sleep(3)
+            self.driver.find_element(By.XPATH, "/html/body/div[1]/div[3]//button[@aria-label='全部']").click()
+            time.sleep(5)
+            picture = 'ok'
+        except NoSuchElementException as e :
+            picture = 'None'
+
+        return picture
+
 
     def __scroll(self, runs_times):
 
@@ -260,7 +280,45 @@ class scrapy_Data_google_map:
         print( "執行完，沒找到: ", undsuccessful_times, " 家" )
         print( "-------------------------------------------------------------------------")
 
+    def catch_picture(self, roll_times):
 
+        picture_ok = ''
+        store_picture = {}
+        self.__open()
+        for number, place in enumerate(self.place):
+            print(f"{place}   loading......................................")
+            picture_ok = ''
+            self.__search(place)
+            picture_ok = self.get_picture()
+
+
+            pictures = []
+
+            if picture_ok != 'None':
+                self.target_window = self.driver.find_element(By.XPATH,
+                                                              '//*[@id="QA0Szd"]//div[contains(@class, "m6QErb DxyBCb kA9KIf dS8AEf XiKgde")]')
+
+                time.sleep(5)
+                self.__scroll(int(roll_times))
+
+                time.sleep(3)
+
+                page = self.driver.page_source
+                soup = BeautifulSoup(page, 'html.parser')
+                review = soup.select('div.Uf0tqf.loaded')
+                # print(review)
+
+
+                for i in review:
+                    picture = i['style']
+                    url_start = picture.find('"') + 1
+                    url_end = picture.find('"', url_start)
+                    image_url = picture[url_start:url_end]
+
+                    pictures.append(image_url)
+
+            store_picture[place] = pictures
+            write_picture_adddress(place, pictures)
 
 
     def catch_review(self):
@@ -342,34 +400,3 @@ class scrapy_Data_google_map:
             times = 0
 
         return store
-
-
-# with open('review.txt', 'r', encoding='utf-8') as f:
-#     data = f.read()
-
-# print(data)
-# #
-# # print(data)
-# # x = data.split(":", 1)
-# data_dict = eval(data)
-# print(data_dict['遠芳火鍋']['Max Chen (好運飾 銀飾界)'])
-
-
-
-# place = ['肉羹林 嘉義雞肉飯-重慶店', '新北市板橋區光明街食三麵屋', '新北市板橋區貴興路石二鍋 板橋愛買南雅店1樓', '稻町森法式甜點舖', '肉多多火鍋 板橋實踐店']
-# place = ['肉羹林 嘉義雞肉飯-重慶店', '新北市板橋區光明街食三麵屋']
-
-# if __name__ == '__main__':
-#     place = read_txt('read.txt')
-#
-#     # print(place)
-# #
-#     data = scrapy_Data_google_map(place)
-#     # data.get_store_time()
-#     data.catch_storedata()
-    # write_txt_all(store)
-    #
-    # print(store)
-
-
-    # input("please input any key to exit!")
