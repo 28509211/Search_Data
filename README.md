@@ -1,1 +1,4 @@
-search_coordinate: 找符合條件的座標點之後可以利用此座標點搭配google套件找到附近的餐廳
+search_coordinate: 找符合條件的座標點
+search_store_Date: 使用爬蟲去google map 抓取店家資訊
+search_store_Picture: 使用爬蟲去google map 抓取店家圖片
+search_store_with_google: 使用google套件透過經緯度，找到附近的餐廳
