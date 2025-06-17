@@ -1,0 +1,9 @@
+selenium
+lxml
+googlemaps
+python-dotenv
+pandas
+numpy
+geopy
+tqdm
+beautifulsoup4 

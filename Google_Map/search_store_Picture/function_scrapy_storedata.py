@@ -13,11 +13,6 @@ def clean_line(text):
         text = text.replace('\n', '')
     return text
 
-def write_txt(key, values, times):
-
-    with open('../store_Review/review_ready.txt', 'a', encoding='utf-8') as f:  # 暫時保存
-        print(f'已蒐集 {times} 筆評論')
-        f.write(f'{key}: {values}\n')
 
 def write_txt_all(text_dic):
     with open('../review.txt', 'w', encoding='utf-8') as f :  #最後保存全部
